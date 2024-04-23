@@ -1,0 +1,113 @@
+diff --git a/examples/gpt2.py b/examples/gpt2.py
+index 71b244e..f761b79 100644
+--- a/examples/gpt2.py
++++ b/examples/gpt2.py
+@@ -6,6 +6,7 @@ import numpy as np
+ from tqdm import trange
+ np.set_printoptions(linewidth=200)
+ from typing import Optional, Tuple
++import struct
+ 
+ from tinygrad.helpers import Timing, getenv, dtypes, DEBUG
+ from tinygrad.ops import GlobalCounters
+@@ -96,6 +97,26 @@ class TransformerBlock:
+       ret, self.cache_k, self.cache_v = self.inner(x, self.cache_k, self.cache_v, start_pos, mask)
+       return ret
+ 
++ctr = 0
++
++#def export_array(array, name, ctr):
++#  filename = "/home/krakan/tmp/it_" + name + "_" + str(ctr) + ".bin"
++#
++#  with open(filename, "wb+") as file:
++#      for value in array:
++#          binary_data = struct.pack("f", value)
++#          file.write(binary_data)
++#  print(f"Exported {len(array)} float values to {filename}")
++
++def export_array(array, name, ctr):
++  filename = "/home/krakan/tmp/gpt2_emb.bin"
++
++  with open(filename, "ab+") as file:
++      for value in array:
++          binary_data = struct.pack("f", value)
++          file.write(binary_data)
++  print(f"Exported {len(array)} float values to {filename}")
++
+ class Transformer:
+   def __init__(self, dim, n_heads, n_layers, norm_eps=1e-5, vocab_size=50257, linear=Linear, max_seq_len=1024):
+     self.wte = Embedding(vocab_size, dim)
+@@ -108,9 +129,35 @@ class Transformer:
+     self.postprocess_jitted = TinyJit(self.postprocess)
+ 
+   def embed(self, tokens, pos):
+-    tok_emb = self.wte(tokens)
+-    pos_emb = self.wpe(pos)
+-    h = tok_emb + pos_emb
++    self.tok_emb = self.wte(tokens)
++    self.pos_emb = self.wpe(pos)
++
++    #print(self.wpe.weight.shape)
++    #np.save('/home/krakan/tmp/wte.npy', self.wte.weight.numpy())
++    #np.save('/home/krakan/tmp/wpe.npy', self.wpe.weight.numpy())
++
++    #print(pos.numpy())
++
++    #print(self.tok_emb.shape)
++    #print(self.pos_emb.shape)
++
++    h = self.tok_emb + self.pos_emb
++
++    print("pos: " + str(pos.numpy()))
++    print("emb: " + str(tokens.numpy()))
++    #print(h.numpy())
++    #print(h.shape)
++
++    #print("Exporting")
++
++    global ctr
++
++    # export_array(self.tok_emb.numpy()[0][0], "tok_emb", ctr)
++    # export_array(self.pos_emb.numpy()[0][0], "pos_emb", ctr)
++    #export_array(h.numpy()[0][0], "h", ctr)
++
++    ctr = ctr + 1
++        
+     return h.realize()
+ 
+   def postprocess(self, x, temperature:Optional[float]):
+@@ -185,10 +232,19 @@ class GPT2:
+                     f", {GlobalCounters.global_mem*1e-9/(GlobalCounters.time_sum_s-st):.2f} GB/s") if DEBUG else None, enabled=timing):
+           probs = self.model(Tensor([toks[start_pos:]]), start_pos, temperature)
+         probs_np = probs.numpy()
+-        tok = int(np.random.choice(len(probs_np), p=probs_np))
++        #tok = int(np.random.choice(len(probs_np), p=probs_np))
++        #tok2 = int(np.argmax(probs_np))
++        #print(len(probs_np))
++        #print(probs_np)
++        #print(tok)
++        #print(tok2)
++        #tok = tok2
++        tok = int(np.argmax(probs_np))
+       start_pos = len(toks)
+       toks.append(tok)
+       output = self.tokenizer.decode(toks)
++      #print(toks)
++      #print(output)
+     return output
+ 
+ # **** main code ****
+diff --git a/examples/llama.py b/examples/llama.py
+index 4139a91..4836010 100755
+--- a/examples/llama.py
++++ b/examples/llama.py
+@@ -9,6 +9,9 @@ import numpy as np
+ np.set_printoptions(linewidth=200)
+ from typing import Optional, Tuple, Dict
+ 
++import sys
++sys.path.append("../")
++
+ from tinygrad.helpers import Timing, getenv, DEBUG, dtypes
+ from tinygrad.ops import Device
+ from tinygrad.tensor import Tensor
