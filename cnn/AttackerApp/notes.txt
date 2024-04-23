@@ -1,0 +1,368 @@
+Code:
+output0.data[idx] = uint(0x12ab34cd);
+
+Found @: 0x79a6586020
+CF 00 00 00 01 40 04 20  00 00 00 00 00 02 00 00  |  .....@. ........ 
+01 00 03 20 01 08 D8 46  00 00 01 00 00 00 30 42  |  ... ...F......0B 
+CD 34 AB 12 01 40 55 20  00 00 00 00 00 01 00 00  |  .4...@U ........ 
+00 00 20 10 00 00 90 43  00 00 00 00 00 05 00 00  |  .. ....C........ 
+00 40 67 00 01 04 26 C0  00 00 00 00 00 00 00 03  |  .@g...&......... 
+00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |  ................ 
+00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |  ................ 
+00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |  ................ 
+FF FF FF 3F 00 00 00 00  00 00 00 00 00 00 00 00  |  ...?............ 
+
+- This seems to be the raw shader code!
+
+Code:
+output0.data[idx] = uint(0x12ab34cd) + input0.data[idx];
+
+CF 00 00 00 01 40 04 20  00 00 00 00 00 02 00 00  |  .....@. ........ 
+01 00 03 20 01 08 D8 46  00 00 01 00 00 08 38 42  |  ... ...F......8B 
+00 00 00 00 01 40 04 20  00 00 00 00 00 05 00 00  |  .....@. ........ 
+03 00 04 00 01 31 04 A0  00 00 22 10 00 00 90 43  |  .....1...."....C 
+01 00 21 10 01 00 30 52  00 00 00 00 00 05 01 00  |  ..!...0R........ 
+00 40 67 00 01 04 26 C0  20 00 00 00 02 40 24 20  |  .@g...&. ....@$  
+00 00 00 00 00 00 00 03  00 00 00 00 00 00 00 00  |  ................ 
+00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |  ................ 
+00 00 00 00 CD 34 AB 12  FF FF FF 3F 00 00 00 00  |  .....4.....?...
+
+Code:
+output0.data[idx] = uint(0x12ab34cd) - input0.data[idx];
+
+CF 00 00 00 01 40 04 20  00 00 00 00 00 02 00 00  |  .....@. ........ 
+01 00 03 20 01 08 D8 46  00 00 01 00 00 08 38 42  |  ... ...F......8B 
+00 00 00 00 01 40 04 20  00 00 00 00 00 05 00 00  |  .....@. ........ 
+03 00 04 00 01 31 04 A0  00 00 22 10 00 00 90 43  |  .....1...."....C 
+21 10 01 00 01 00 70 52  00 00 00 00 00 05 01 00  |  !.....pR........ <- Difference between addition / subtraction is here
+00 40 67 00 01 04 26 C0  20 00 00 00 02 40 24 20  |  .@g...&. ....@$  
+00 00 00 00 00 00 00 03  00 00 00 00 00 00 00 00  |  ................ 
+00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |  ................ 
+00 00 00 00 CD 34 AB 12  FF FF FF 3F 00 00 00 00  |  .....4.....?.... 
+
+Code:
+output0.data[idx] = input0.data[idx];
+
+0000: CF 00 00 00 01 40 04 20  00 00 00 00 00 02 00 00  |  .....@. ........ 
+0010: 01 00 03 20 01 08 D8 46  00 00 01 00 00 08 38 42  |  ... ...F......8B 
+0020: 00 00 00 00 01 40 04 20  00 00 00 00 00 05 00 00  |  .....@. ........ 
+0030: 03 00 04 00 01 31 04 A0  00 00 21 10 00 00 90 43  |  .....1....!....C 
+0040: 00 00 00 00 00 05 01 00  00 40 67 00 01 04 26 D0  |  .........@g...&. 
+0050: 20 00 00 00 02 40 24 20  00 00 00 00 00 00 00 03  |   ....@$ ........ 
+0060: 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |  ................ 
+0070: 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |  ................ 
+0080: 00 00 00 00 FF FF FF 3F  00 00 00 00 00 00 00 00  |  .......?........ 
+
+
+
+
+
+
+
+
+
+
+Shader patching experiments:
+*(unsigned int*)(addr - 0x84 + 0x40) = 0xffff;
+- many patterns, e.g.:
+DA A2 2D 21 D9 A2 2D 21  D8 A2 2D 21 D7 A2 2D 21  |  ..-!..-!..-!..-! 
+D6 A2 2D 21 D5 A2 2D 21  D4 A2 2D 21 D3 A2 2D 21  |  ..-!..-!..-!..-! 
+C8 78 31 08 C7 78 31 08  C6 78 31 08 C5 78 31 08  |  .x1..x1..x1..x1. 
+C4 78 31 08 C3 78 31 08  C2 78 31 08 C1 78 31 08  |  .x1..x1..x1..x1. 
+12 49 05 18 11 49 05 18  10 49 05 18 0F 49 05 18  |  .I...I...I...I.. 
+0E 49 05 18 0D 49 05 18  0C 49 05 18 0B 49 05 18  |  .I...I...I...I.. 
+B8 45 A5 C5 B7 45 A5 C5  B6 45 A5 C5 B5 45 A5 C5  |  .E...E...E...E.. 
+B4 45 A5 C5 B3 45 A5 C5  B2 45 A5 C5 B1 45 A5 C5  |  .E...E...E...E.. 
+E1 E1 69 7C E0 E1 69 7C  DF E1 69 7C DE E1 69 7C  |  ..i|..i|..i|..i| 
+DD E1 69 7C DC E1 69 7C  DB E1 69 7C DA E1 69 7C  |  ..i|..i|..i|..i| 
+75 A8 9D 8E 74 A8 9D 8E  73 A8 9D 8E 72 A8 9D 8E  |  u...t...s...r... 
+71 A8 9D 8E 70 A8 9D 8E  6F A8 9D 8E 6E A8 9D 8E  |  q...p...o...n... 
+22 82 84 30 21 82 84 30  20 82 84 30 1F 82 84 30  |  "..0!..0 ..0...0 
+1E 82 84 30 1D 82 84 30  1C 82 84 30 1B 82 84 30  |  ...0...0...0...0
+
+
+
+
+
+
+
+
+
+
+
+
+*(unsigned int*)(addr - 0x84 + 0x40) = 0xff;
+When switching between apps, something seems to be different?
+win=Window{32d4d03 u0 com.example.testapp/com.example.testapp.MainActivity} destroySurfaces: appStopped=true cleanupOnResume=false win.mWindowRemovalAllowed=false win.mRemoveOnExit=false win.mViewVisibility=8 caller=com.android.server.wm.ActivityRecord.destroySurfaces:6536 com.android.server.wm.ActivityRecord.destroySurfaces:6517 com.android.server.wm.ActivityRecord.notifyAppStopped:6581 com.android.server.wm.ActivityRecord.activityStopped:7169 com.android.server.wm.ActivityClientController.activityStopped:258 android.app.IActivityClientController$Stub.onTransact:613 com.android.server.wm.ActivityClientController.onTransact:136 
+2023-07-27 15:58:18.477 16393-16393 InputTransport          com.example.testapp                  D  Input channel destroyed: 'ClientS', fd=111
+2023-07-27 15:58:18.481 16393-16427 patch                   com.example.testapp                  I  79ae7f1000-79ae7f2000 | rw-s | 15000 | /dev/kgsl-3d0
+2023-07-27 15:58:18.481 16393-16427 patch                   com.example.testapp                  I  Found @: 0x79ae7f1084
+2023-07-27 15:58:18.485 16393-16427 computeShader           com.example.testapp                  I  leaked data:
+2023-07-27 15:58:18.525 16393-16427 hexDump                 com.example.testapp                  I  85 2C 85 2C 84 2C 85 2C  83 2C 85 2C 82 2C 85 2C  |  .,.,.,.,.,.,.,., 
+81 2C 85 2C 80 2C 85 2C  7F 2C 85 2C 7E 2C 85 2C  |  .,.,.,.,.,.,~,., 
+F8 FF FF FF F7 FF FF FF  F6 FF FF FF F5 FF FF FF  |  ................ 
+F4 FF FF FF F3 FF FF FF  F2 FF FF FF F1 FF FF FF  |  ................ 
+75 2C 85 2C 74 2C 85 2C  73 2C 85 2C 72 2C 85 2C  |  u,.,t,.,s,.,r,., 
+71 2C 85 2C 70 2C 85 2C  6F 2C 85 2C 6E 2C 85 2C  |  q,.,p,.,o,.,n,., 
+E8 FF FF FF E7 FF FF FF  E6 FF FF FF E5 FF FF FF  |  ................ 
+E4 FF FF FF E3 FF FF FF  E2 FF FF FF E1 FF FF FF  |  ................ 
+E0 FF FF FF DF FF FF FF  DE FF FF FF DD FF FF FF  |  ................ 
+DC FF FF FF DB FF FF FF  DA FF FF FF D9 FF FF FF  |  ................ 
+D8 FF FF FF D7 FF FF FF  D6 FF FF FF D5 FF FF FF  |  ................ 
+D4 FF FF FF D3 FF FF FF  D2 FF FF FF D1 FF FF FF  |  ................ 
+55 2C 85 2C 54 2C 85 2C  53 2C 85 2C 52 2C 85 2C  |  U,.,T,.,S,.,R,., 
+51 2C 85 2C 50 2C 85 2C  4F 2C 85 2C 4E 2C 85 2C  |  Q,.,P,.,O,.,N,., 
+C8 FF FF FF C7 FF FF FF  C6 F
+2023-07-27 15:58:18.525 16393-16427 computeShader           com.example.testapp                  I  verification PASSED
+2023-07-27 15:58:18.527 16393-16427 setupComputeShader      com.example.testapp                  I  num_platforms: 0
+2023-07-27 15:58:18.572 16393-16427 patch                   com.example.testapp                  I  79ae7f1000-79ae7f2000 | rw-s | 15000 | /dev/kgsl-3d0
+2023-07-27 15:58:18.572 16393-16427 patch                   com.example.testapp                  I  Found @: 0x79ae7f1084
+2023-07-27 15:58:18.576 16393-16427 computeShader           com.example.testapp                  I  leaked data:
+2023-07-27 15:58:18.595 16393-16427 hexDump                 com.example.testapp                  I  00 00 00 00 FF FF FF FF  FE FF FF FF FD FF FF FF  |  ................ 
+FC FF FF FF FB FF FF FF  FA FF FF FF F9 FF FF FF  |  ................ 
+F8 FF FF FF F7 FF FF FF  F6 FF FF FF F5 FF FF FF  |  ................ 
+F4 FF FF FF F3 FF FF FF  F2 FF FF FF F1 FF FF FF  |  ................ 
+F0 FF FF FF EF FF FF FF  EE FF FF FF ED FF FF FF  |  ................ 
+EC FF FF FF EB FF FF FF  EA FF FF FF E9 FF FF FF  |  ................ 
+E8 FF FF FF E7 FF FF FF  E6 FF FF FF E5 FF FF FF  |  ................ 
+E4 FF FF FF E3 FF FF FF  E2 FF FF FF E1 FF FF FF  |  ................ 
+E0 FF FF FF DF FF FF FF  DE FF FF FF DD FF FF FF  |  ................ 
+DC FF FF FF DB FF FF FF  DA FF FF FF D9 FF FF FF  |  ................ 
+D8 FF FF FF D7 FF FF FF  D6 FF FF FF D5 FF FF FF  |  ................ 
+D4 FF FF FF D3 FF FF FF  D2 FF FF FF D1 FF FF FF  |  ................ 
+D0 FF FF FF CF FF FF FF  CE FF FF FF CD FF FF FF  |  ................ 
+CC FF FF FF CB FF FF FF  CA FF FF FF C9 FF FF FF  |  ................ 
+C8 FF FF FF C7 FF FF FF  C6 F
+2023-07-27 15:58:18.595 16393-16427 computeShader           com.example.testapp                  I  verification PASSED
+2023-07-27 15:58:18.597 16393-16427 setupComputeShader      com.example.testapp                  I  num_platforms: 0
+2023-07-27 15:58:18.630 16393-16427 patch                   com.example.testapp                  I  79ae7f1000-79ae7f2000 | rw-s | 15000 | /dev/kgsl-3d0
+2023-07-27 15:58:18.630 16393-16427 patch                   com.example.testapp                  I  Found @: 0x79ae7f1084
+2023-07-27 15:58:18.634 16393-16427 computeShader           com.example.testapp                  I  leaked data:
+2023-07-27 15:58:18.649 16393-16427 hexDump                 com.example.testapp                  I  85 28 06 2A 84 28 06 2A  83 28 06 2A 82 28 06 2A  |  .(.*.(.*.(.*.(.* 
+81 28 06 2A 80 28 06 2A  7F 28 06 2A 7E 28 06 2A  |  .(.*.(.*.(.*~(.* 
+7D 28 87 2A 7C 28 87 2A  7B 28 87 2A 7A 28 87 2A  |  }(.*|(.*{(.*z(.* 
+79 28 87 2A 78 28 87 2A  77 28 87 2A 76 28 87 2A  |  y(.*x(.*w(.*v(.* 
+75 28 87 2A 74 28 87 2A  73 28 87 2A 72 28 87 2A  |  u(.*t(.*s(.*r(.* 
+71 28 87 2A 70 28 87 2A  6F 28 87 2A 6E 28 87 2A  |  q(.*p(.*o(.*n(.* 
+CC EE A9 42 CB EE A9 42  CA EE A9 42 C9 EE A9 42  |  ...B...B...B...B 
+C8 EE A9 42 C7 EE A9 42  C6 EE A9 42 C5 EE A9 42  |  ...B...B...B...B 
+65 28 87 2A 64 28 87 2A  63 28 87 2A 62 28 87 2A  |  e(.*d(.*c(.*b(.* 
+61 28 87 2A 60 28 87 2A  5F 28 87 2A 5E 28 87 2A  |  a(.*`(.*_(.*^(.* 
+5D 28 87 2A 5C 28 87 2A  5B 28 87 2A 5A 28 87 2A  |  ](.*\(.*[(.*Z(.* 
+59 28 87 2A 58 28 87 2A  57 28 87 2A 56 28 87 2A  |  Y(.*X(.*W(.*V(.* 
+55 28 87 2A 54 28 87 2A  53 28 87 2A 52 28 87 2A  |  U(.*T(.*S(.*R(.* 
+51 28 87 2A 50 28 87 2A  4F 28 87 2A 4E 28 87 2A  |  Q(.*P(.*O(.*N(.* 
+AC EE A9 42 AB EE A9 42  AA E
+2023-07-27 15:58:18.649 16393-16427 computeShader           com.example.testapp                  I  verification PASSED
+2023-07-27 15:58:18.651 16393-16427 setupComputeShader      com.example.testapp                  I  num_platforms: 0
+2023-07-27 15:58:18.686 16393-16427 patch                   com.example.testapp                  I  79ae7f1000-79ae7f2000 | rw-s | 15000 | /dev/kgsl-3d0
+2023-07-27 15:58:18.686 16393-16427 patch                   com.example.testapp                  I  Found @: 0x79ae7f1084
+2023-07-27 15:58:18.692 16393-16427 computeShader           com.example.testapp                  I  leaked data:
+2023-07-27 15:58:18.706 16393-16427 hexDump                 com.example.testapp                  I  1E FB B1 42 1D FB B1 42  1C FB B1 42 1B FB B1 42  |  ...B...B...B...B 
+1A FB B1 42 19 FB B1 42  18 FB B1 42 17 FB B1 42  |  ...B...B...B...B 
+FE 25 85 28 FD 25 85 28  FA 27 06 2A F9 27 06 2A  |  .%.(.%.(.'.*.'.* 
+FA 25 85 28 F9 25 85 28  F6 27 06 2A F5 27 06 2A  |  .%.(.%.(.'.*.'.* 
+D7 32 27 33 D6 32 27 33  D3 30 45 31 73 2D 46 2E  |  .2'3.2'3.0E1s-F. 
+F2 31 66 32 73 2F 04 30  F0 25 85 28 EF 25 85 28  |  .1f2s/.0.%.(.%.( 
+CF 32 27 33 CE 32 27 33  CD 32 27 33 CC 32 27 33  |  .2'3.2'3.2'3.2'3 
+CB 32 27 33 CA 32 27 33  C9 32 27 33 C8 32 27 33  |  .2'3.2'3.2'3.2'3 
+FE FA B1 42 FD FA B1 42  FC FA B1 42 FB FA B1 42  |  ...B...B...B...B 
+FA FA B1 42 F9 FA B1 42  F8 FA B1 42 F7 FA B1 42  |  ...B...B...B...B 
+DE 25 85 28 DD 25 85 28  DD 26 86 29 DC 26 86 29  |  .%.(.%.(.&.).&.) 
+DA 25 85 28 D9 25 85 28  D9 26 86 29 D8 26 86 29  |  .%.(.%.(.&.).&.) 
+B7 32 27 33 B6 32 27 33  B5 32 27 33 B4 32 27 33  |  .2'3.2'3.2'3.2'3 
+B3 32 27 33 B2 32 27 33  B1 32 27 33 B0 32 27 33  |  .2'3.2'3.2'3.2'3 
+AF 32 07 33 AE 32 07 33  AD 3
+2023-07-27 15:58:18.706 16393-16427 computeShader           com.example.testapp                  I  verification PASSED
+2023-07-27 15:58:18.708 16393-16427 setupComputeShader      com.example.testapp                  I  num_platforms: 0
+2023-07-27 15:58:18.738 16393-16427 patch                   com.example.testapp                  I  79ae7f1000-79ae7f2000 | rw-s | 15000 | /dev/kgsl-3d0
+2023-07-27 15:58:18.738 16393-16427 patch                   com.example.testapp                  I  Found @: 0x79ae7f1084
+2023-07-27 15:58:18.741 16393-16427 computeShader           com.example.testapp                  I  leaked data:
+2023-07-27 15:58:18.755 16393-16427 hexDump                 com.example.testapp                  I  00 3C 00 00 FF 3B 00 00  FE 3B 00 00 FD 3B 00 00  |  .<...;...;...;.. 
+FC 3B 00 00 FB 3B 00 00  FA 3B 00 00 F9 3B 00 00  |  .;...;...;...;.. 
+F8 3B DA BE F7 3B D6 BE  F6 3B D3 BE F5 3B CE BE  |  .;...;...;...;.. 
+F4 3B 00 00 F3 3B 00 00  F2 3B 00 00 F1 3B 00 00  |  .;...;...;...;.. 
+F0 3B B2 BE EF 3B AE BE  EE 3B A9 BE ED 3B A6 BE  |  .;...;...;...;.. 
+EC 3B AB BE EB 3B A7 BE  EA 3B A2 BE E9 3B 9E BE  |  .;...;...;...;.. 
+E8 3B D5 BE E7 3B CD BE  E6 3B D1 BE E5 3B C9 BE  |  .;...;...;...;.. 
+E4 3B C6 BE E3 3B BE BE  E2 3B C1 BE E1 3B B9 BE  |  .;...;...;...;.. 
+B8 3D 00 00 B7 3D 00 00  3E 37 00 00 3D 37 00 00  |  .=...=..>7..=7.. 
+B4 3D 00 00 B3 3D 00 00  3A 37 00 00 39 37 00 00  |  .=...=..:7..97.. 
+D8 3B 82 BE D7 3B 73 BE  D6 3B 7B BE D5 3B 6A BE  |  .;...;s..;{..;j. 
+D4 3B 61 BE D3 3B 4F BE  D2 3B 58 BE D1 3B 46 BE  |  .;a..;O..;X..;F. 
+D0 3B 87 BE CF 3B 7B BE  CE 3B 83 BE CD 3B 74 BE  |  .;...;{..;...;t. 
+CC 3B 68 BE CB 3B 55 BE  CA 3B 61 BE C9 3B 4E BE  |  .;h..;U..;a..;N. 
+C8 3B 9E BE C7 3B 94 BE  C6 3
+2023-07-27 15:58:18.755 16393-16427 computeShader           com.example.testapp                  I  verification PASSED
+2023-07-27 15:58:18.756 16393-16427 setupComputeShader      com.example.testapp                  I  num_platforms: 0
+2023-07-27 15:58:18.785 16393-16427 patch                   com.example.testapp                  I  79ae7f1000-79ae7f2000 | rw-s | 15000 | /dev/kgsl-3d0
+2023-07-27 15:58:18.785 16393-16427 patch                   com.example.testapp                  I  Found @: 0x79ae7f1084
+2023-07-27 15:58:18.786 16393-16427 computeShader           com.example.testapp                  I  leaked data:
+2023-07-27 15:58:18.800 16393-16427 hexDump                 com.example.testapp                  I  91 51 11 5D 60 56 92 E1  D5 47 B7 FF D5 4F 52 5C  |  .Q.]`V...G...OR\ 
+96 78 08 5A 99 83 A9 EF  38 AA B7 AA A7 E7 B0 69  |  .x.Z....8......i 
+4F DC 55 CD 3C 45 7D D5  BB 55 54 5A 8A 1D 5D 79  |  O.U.<E}..UTZ..]y 
+03 AA AA 4B 1D AA 8B A2  8A 8A 6A 88 19 BE AA AF  |  ...K......j..... 
+45 11 9F B8 44 46 90 C0  43 15 16 75 3D D5 F5 40  |  E...DF..C..u=..@ 
+BE 8B 3F A9 F6 25 AA CC  94 2A A0 AF 11 EB 8B CA  |  ..?..%...*...... 
+49 14 65 15 5C 51 92 51  F9 74 44 77 EA CB 50 90  |  I.e.\Q.Q.tDw..P. 
+67 8A 2A 8F 83 3D 89 83  84 B3 AD AB 99 BA 4A 83  |  g.*..=........J. 
+54 7D 74 41 34 C5 4D DD  EE B6 50 91 E0 54 E2 E4  |  T}tA4.M...P..T.. 
+95 BA AE AB 59 FE 3C E1  64 BA EA 7A 81 FA AA BA  |  ....Y.<.d..z.... 
+CD 59 35 75 28 72 E5 47  B7 73 0D 06 26 75 87 99  |  .Y5u(r.G.s..&u.. 
+76 EA E6 8B FD B9 AB AB  8D A2 AA 0B BB B8 AA B9  |  v............... 
+03 3C 07 46 0F AD DF 76  1B C0 55 45 E5 04 41 BC  |  .<.F...v..UE..A. 
+7C 06 AA B6 CB 89 A0 0E  F6 A9 72 8A A3 A2 BA BA  |  |.........r..... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GPU hangs:
+*(unsigned char*)(addr - 0x84 + 0x57) = 0x0;
+*(unsigned char*)(addr - 0x84 + 0x57) = 0x10; <- System UI crashes
+
+<gsl_ldd_control:565>: ioctl fd 92 code 0x400c0907 (IOCTL_KGSL_DEVICE_WAITTIMESTAMP_CTXTID) failed: errno 35 Resource deadlock would occur
+2023-07-27 19:05:25.945 17299-17299 Adreno-GSL              com.example.testapp                  W  <log_gpu_snapshot:474>: panel.gpuSnapshotPath is not set.not generating user snapshot
+
+
+
+
+
+
+
+
+
+
+
+Seems to output "random" data:
+*(unsigned char*)(addr - 0x84 + 0x54) = 0x09;
+
+54 14 D1 15 47 28 62 DC  56 5F 43 52 4D 3D 35 E7  |  T...G(b.V_CRM=5. 
+A8 F2 3D 6B 8A E2 26 3A  AA 2E 88 F6 AD DA FE BF  |  ..=k..&:........ 
+65 55 54 3D 75 79 51 6C  55 51 B6 6E 45 55 5D 73  |  eUT=uyQlUQ.nEU]s 
+E8 AC 98 92 AA A0 A4 2A  89 6E A2 D2 68 8B 5A E2  |  .......*.n..h.Z. 
+54 45 51 55 21 5F 74 F5  70 07 54 77 55 21 51 4D  |  TEQU!_t.p.TwU!QM 
+67 9A F8 EA 4B EA 89 AA  A8 F8 2A EA A2 AE 2A AB  |  g...K.....*...*. 
+45 D3 15 5A 9C F3 70 45  5B 15 11 53 D4 64 E6 44  |  E..Z..pE[..S.d.D 
+A9 0E 8C 9A B8 EF 3B E8  3E AD EA 0C A2 0E 2F 2A  |  ......;.>...../* 
+21 01 46 7D B3 48 23 54  20 5C 43 D4 11 98 D4 FB  |  !.F}.H#T \C..... 
+A6 36 B8 8A AE F8 82 82  96 AE 2A 33 02 EE BB 2E  |  .6........*3.... 
+4B 4D C5 55 44 DD 63 94  55 57 D7 45 D4 5D 4D 5D  |  KM.UD.c.UW.E.]M] 
+BB AD 80 A2 92 3E E8 FE  20 AE 2A ED AF 89 EA AA  |  .....>.. .*..... 
+D5 51 14 05 51 77 5D 05  57 D4 45 DE 3C 1D 49 71  |  .Q..Qw].W.E.<.Iq 
+B2 22 0A FA A6 E8 82 9E  A9 0A BA EA AC 2C 0E 2A  |  ."...........,.* 
+55 41 C1 55 74 50 9D 17  D4 9
+
+
+
+
+
+
+
+
+
+
+Another resource deadlock:
+*(unsigned char*)(addr - 0x84 + 0x52) = 0x9f;
+*(unsigned char*)(addr - 0x84 + 0x52) = 0x97;
+*(unsigned char*)(addr - 0x84 + 0x52) = 0xA0;
+*(unsigned char*)(addr - 0x84 + 0x52) = 0x20;
+W  <gsl_ldd_control:565>: ioctl fd 94 code 0x400c0907 (IOCTL_KGSL_DEVICE_WAITTIMESTAMP_CTXTID) failed: errno 35 Resource deadlock would occur
+2023-07-27 21:43:28.724 25360-25360 Adreno-GSL              com.example.testapp                  W  <log_gpu_snapshot:474>: panel.gpuSnapshotPath is not set.not generating user snapshot
+
+
+Another resource deadlock
+*(unsigned char*)(addr - 0x84 + 0x2e) = 0x02;
+
+
+
+
+
+
+
+---------------------------------------------
+Data after new run is shifted??
+ leaked data:
+2023-07-28 00:55:22.276  5712-5712  hexDump                 com.example.testapp                  I  0000: 91 51 11 7D 60 56 92 C1  D5 47 9F FE D5 4F D6 5D  |  .Q.}`V...G...O.] 
+                                                                                                    0010: 16 78 28 5A B9 93 A9 FF  34 AB B4 88 A7 C7 B0 E9  |  .x(Z....4....... 
+                                                                                                    0020: 3F D4 55 CD 3C 65 75 D5  3B 55 54 4A 8A 1D 5D 71  |  ?.U.<eu.;UTJ..]q 
+                                                                                                    0030: 03 8A BA CB 15 AA 8B A2  AA 8A 7A 80 99 AF A2 AB  |  ..........z..... 
+                                                                                                    0040: 45 50 9C BC 44 44 D1 C6  43 15 14 75 01 D5 E5 40  |  EP..DD..C..u...@ 
+                                                                                                    0050: BE 0B 3E E9 F5 85 AA CC  14 2A A0 AA 09 FB 9B AA  |  ..>......*...... 
+                                                                                                    0060: 09 16 65 95 64 51 94 59  F9 30 00 75 EA 8B 40 90  |  ..e.dQ.Y.0.u..@. 
+                                                                                                    0070: 67 8A 2A 8B 85 29 89 83  44 A3 AD FB D1 2A 08 83  |  g.*..)..D....*.. 
+                                                                                                    0080: 55 7D 55 41 54 C3 49 D5  EE B6 50 91 E0 14 62 B4  |  U}UAT.I...P...b. 
+                                                                                                    0090: 95 FA AF EB 55 FE 3C E8  65 B8 A2 70 91 FA AA BA  |  ....U.<.e..p.... 
+                                                                                                    00A0: 8D 59 15 75 28 72 E5 C5  4B 73 0D 04 25 75 87 C1  |  .Y.u(r..Ks..%u.. 
+                                                                                                    00B0: 76 FA E6 AA FD B9 AE AB  7D A6 A2 8B BB B8 AA B9  |  v.......}....... 
+                                                                                                    00C0: E2 5B 07 4E 0F A1 DF 36  1B C0 55 45 E5 04 41 B4  |  .[.N...6..UE..A. 
+                                                                                                    00D0: 7E 02 AA 9A CB 89 A0 0E  F6 A9 72 8A C3 A3 AA BA  |  ~.........r..... 
+                                                                                                    00E0: 9C 44 45 DC 2B F2 55 F0  16 FD 13 41 E2 90 55 71  |  .DE.+.U....A..Uq 
+                                                                                                    00F0: 6E A0 8A 04 6C 76 2B 2A  6C 02 02 EB 4B 0B A2 0A  |  n...lv+*l...K... 
+                                                                                                    0100: 2F 55 78 47 1E 55 34 5E  B3 47 81 35 12 67 DA 57  |  /UxG.U4^.G.5.g.W 
+                                                                                                    0110: A4 E2 AA 82 0D AF 3A 8B  24 A3 AE 89 28 EF AC EA  |  ......:.$...(... 
+                                                                                                    0120: 34 0D 54 5C 0C 9D 4F 5C  8B 5D 54 14 8A D4 C1 55  |  4.T\..O\.]T....U 
+                                                                                                    0130: 3E EA AB E5 5D EB B8 AA  6C EA BB E8 53 AB A8 E8  |  >...]...l...S... 
+                                                                                                    0140: C4 54 53 77 06 53 51 4D  BF DB 7D 44 B0 34 2C D0  |  .TSw.SQM..}D.4,. 
+                                                                                                    0150: 3E A6 A2 A3 56 CE A0 EB  34 AA E2 38 41 AE 2A AB  |  >...V...4..8A.*. 
+                                                                                                    0160: C7 64 56 50 E7 F0 11 95  3B 12 50 21 B2 77 F5 5B  |  .dVP....;.P!.w.[ 
+                                                                                                    0170: 77 23 10 AC D5 F5 E7 78  50 AA 9A 62 5C B3 A2 82  |  w#.....xP..b\... 
+                                                                                                    0180: 97 E5 C5 F4 CC 04 94 17  C3 7F 5B 41 81 15 DD 5C  |  ..........[A...\ 
+                                                                                                    0190: CA AA 33 86 89 EF A2 38  42 3E E3 AE 23 A8 AE E8  |  ..3....8B>..#... 
+                                                                                                    01A0: BF 04 51 05 EA 5C D1 55  CA 34 55 59 E9 54 45 54  |  ..Q..\.U.4UY.TET 
+                                                                                                    01B0: BF 2D 83 BE 3E BC 88 8E  3C 57 82 EE 4B AA 8A AA  |  .-..>...<W..K... 
+                                                                                                    01C0: 55 5E 50 5B E4 48 79 56  5F 14 45 5C 1A 76 4D C6  |  U^P[.HyV_.E\.vM. 
+                                                                                                    01D0: 34 69 9B 39 3B 6A EA 8A  F9 A9 8E 23 0B C8 AA 8C  |  4i.9;j.....#.... 
+                                                                                                    01E0: DD 38 45 4D 5B FB D6 17  65 4B 54 19 A1 51 5D 19  |  .8EM[...eKT..Q]. 
+                                                                                                    01F0: 30 6B AA AA 3B BA AE B3  8D 4A EE F6 46 AA 88     |  0k..;....J..F.. 
+
+........
+
+2023-07-28 00:55:47.570  6090-6090  computeShader           com.example.testapp                  I  leaked data:
+2023-07-28 00:55:47.570  6090-6090  hexDump                 com.example.testapp                  I  0000: 11 51 11 7D 5F D6 96 CD  D5 67 97 FF D5 5F 5C 4C  |  .Q.}_....g..._\L 
+                                                                                                    0010: 96 FC 09 78 B9 83 89 FF  38 AA B7 B9 A7 D7 A0 29  |  ...x....8......) 
+                                                                                                    0020: 3F D4 55 CD 38 65 7D D5  3B 55 54 6A AA 1D 5D 7D  |  ?.U.8e}.;UTj..]} 
+                                                                                                    0030: 03 AA AA DB 1D AA 8A E2  AA 8A 6A 8A 99 BE EA AB  |  ..........j..... 
+                                                                                                    0040: 45 11 97 BC 44 44 91 C2  43 15 16 75 41 D5 F5 60  |  E...DD..C..uA..` 
+                                                                                                    0050: C2 8B 7E E8 F6 A5 AA C8  94 2A A0 AE 0B FB C3 AB  |  ..~......*...... 
+                                                                                                    0060: 19 16 65 95 5C 51 96 51  F9 64 08 75 EC 8B 50 90  |  ..e.\Q.Q.d.u..P. 
+                                                                                                    0070: 67 8A 2B 8B 85 2D A9 A3  84 B3 AC FB 99 BA 08 83  |  g.+..-.......... 
+                                                                                                    0080: 54 7D 50 41 3C C5 49 D1  EE B6 50 91 E4 14 62 E0  |  T}PA<.I...P...b. 
+                                                                                                    0090: 95 FA AF A9 59 FE 3C 68  64 BA A2 78 91 BE AA BA  |  ....Y.<hd..x.... 
+                                                                                                    00A0: 8D 59 15 75 28 72 F5 45  3B 73 0D 06 25 75 87 91  |  .Y.u(r.E;s..%u.. 
+                                                                                                    00B0: 76 EA E6 8A FD BA AB EB  90 A2 AA 0B BB B8 AA B9  |  v............... 
+                                                                                                    00C0: 02 1C 87 46 13 A5 DF 36  9B C0 55 45 E5 C4 41 A4  |  ...F...6..UE..A. 
+                                                                                                    00D0: 7E 06 AA 9A F3 89 A8 2E  F6 A9 6A AA 23 A3 BA BA  |  ~.........j.#... 
+                                                                                                    00E0: 8C 44 01 D8 AB D2 55 F0  16 ED 13 40 E2 94 41 71  |  .D....U....@..Aq 
+                                                                                                    00F0: 6E AC 8A 04 7F 72 2B 2A  6C 62 1A AB 4B 0B A2 02  |  n....r+*lb..K... 
+                                                                                                    0100: 2F 55 F8 57 16 55 24 56  B2 07 81 31 12 67 96 57  |  /U.W.U$V...1.g.W 
+                                                                                                    0110: A4 E2 AA A2 0D AF BA 8F  B4 A2 EE 01 27 EF EC EA  |  ............'... 
+                                                                                                    0120: F5 0C 54 54 8C DD CD 4C  95 5C 56 74 8A DC 11 45  |  ..TT...L.\Vt...E 
+                                                                                                    0130: 60 EE AB A5 6D EB 98 AA  6C EA BB E8 53 AB A0 EA  |  `...m...l...S... 
+                                                                                                    0140: E0 54 53 77 04 53 59 4D  BF DB 7D 55 C2 34 2C D0  |  .TSw.SYM..}U.4,. 
+                                                                                                    0150: 5E A2 A2 E3 56 EE AC AB  34 AA E2 18 59 BE AA AB  |  ^...V...4...Y... 
+                                                                                                    0160: C3 60 52 14 E8 F0 00 95  AB 12 50 21 CA 67 77 5F  |  .`R.......P!.gw_ 
+                                                                                                    0170: 67 63 30 AE DD D1 E7 78  4C AA 98 60 5C BB A2 82  |  gc0....xL..`\... 
+                                                                                                    0180: 95 E4 C5 F4 1C 15 94 17  C3 7F 7B 41 81 15 DD 3C  |  ..........{A...< 
+                                                                                                    0190: C4 AA 33 8E 81 EF A3 B8  42 3E E3 AF 23 A8 A6 E9  |  ..3.....B>..#... 
+                                                                                                    01A0: AF 04 51 05 EA 5C 58 55  3B 35 57 54 E9 54 65 54  |  ..Q..\XU;5WT.TeT 
+                                                                                                    01B0: BF 2D C3 B3 3E BC 88 8E  3C D7 82 6A 4B AA 8A AA  |  .-..>...<..jK... 
+                                                                                                    01C0: 51 5E 45 1F D4 48 79 56  5F 04 45 5C 2A 76 4D C4  |  Q^E..HyV_.E\*vM. 
+                                                                                                    01D0: 34 69 BB 19 2B 6A EB 82  D9 29 8A 0B 8B E7 AA AC  |  4i..+j...)...... 
+                                                                                                    01E0: DD 18 45 4D 83 7B 95 17  1C 4F 54 19 A2 51 5D 08  |  ..EM.{...OT..Q]. 
+                                                                                                    01F0: 30 6B 3A 2A AB F9 AE B3  8D 2C EF F6 65 BA A8     |  0k:*.....,..e.. 
+
+Why is the output sometomes modified by one bit?
+Is there a modified global state? Or register which is not cleared?
+But is only sometimes shifted by 1. Not necessarily always.
+
+This can e.g. be a conditional flag or something like that which is not cleared?
