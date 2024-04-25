@@ -1,0 +1,59 @@
+diff --git a/gaps/cli.py b/gaps/cli.py
+index 9af416a..dd97eba 100644
+--- a/gaps/cli.py
++++ b/gaps/cli.py
+@@ -9,7 +9,7 @@ from gaps.size_detector import SizeDetector
+ DEFAULT_GENERATIONS: int = 20
+ DEFAULT_POPULATION: int = 200
+ 
+-MIN_PIECE_SIZE: int = 32
++MIN_PIECE_SIZE: int = 4
+ MAX_PIECE_SIZE: int = 128
+ 
+ 
+diff --git a/gaps/piece.py b/gaps/piece.py
+index cc0d9e1..8a5cbc9 100644
+--- a/gaps/piece.py
++++ b/gaps/piece.py
+@@ -23,7 +23,7 @@ class Piece(object):
+ 
+     def size(self):
+         """Returns piece size"""
+-        return self.image.shape[0]
++        return (8,4)#self.image.shape[0]
+ 
+     def shape(self):
+         """Returns shape of piece's image"""
+diff --git a/gaps/utils.py b/gaps/utils.py
+index 9ef649b..4791778 100644
+--- a/gaps/utils.py
++++ b/gaps/utils.py
+@@ -20,20 +20,21 @@ def flatten_image(image, piece_size, indexed=False):
+         >>> flat_image = flatten_image(image, 32)
+ 
+     """
+-    rows, columns = image.shape[0] // piece_size, image.shape[1] // piece_size
++    rows, columns = image.shape[0] // 4, image.shape[1] // 8
+     pieces = []
+ 
+     # Crop pieces from original image
+     for y in range(rows):
+         for x in range(columns):
+             left, top, w, h = (
+-                x * piece_size,
+-                y * piece_size,
+-                (x + 1) * piece_size,
+-                (y + 1) * piece_size,
++                x * 8,
++                y * 4,
++                (x + 1) * 8,
++                (y + 1) * 4,
+             )
+-            piece = np.empty((piece_size, piece_size, image.shape[2]))
+-            piece[:piece_size, :piece_size, :] = image[top:h, left:w, :]
++            print(x,y,left,top)
++            piece = np.empty((4, 8, image.shape[2]))
++            piece[:4, :8, :] = image[top:h, left:w, :]
+             pieces.append(piece)
+ 
+     if indexed:

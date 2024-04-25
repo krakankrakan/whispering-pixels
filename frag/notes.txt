@@ -1,0 +1,1 @@
+/home/krakan/.local/bin/poetry run gaps run ../../show_all.png solution2.jpg --generations=20 --population=600 --size=32
