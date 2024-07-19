@@ -3,7 +3,7 @@ import sys
 import struct
 import numpy as np
 from matplotlib import pyplot as plt
-import frag
+import frag2 as frag
 import math
 
 def load_float_array_from_file(filename):

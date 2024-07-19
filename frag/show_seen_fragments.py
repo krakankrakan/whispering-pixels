@@ -3,7 +3,7 @@ import sys
 import struct
 import numpy as np
 from matplotlib import pyplot as plt
-import frag
+import frag2 as frag
 
 def load_float_array_from_file(filename):
     float_array = []
@@ -159,7 +159,7 @@ for t in corr_tupes:
 #                in_runs.append(run_idx)
     #print(in_runs)
 
-    print(len(occurences))
+    #print(len(occurences))
     print(t[1])
 
     # Show number of occurences of single fragments
