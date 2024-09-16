@@ -8,6 +8,8 @@
 #include <utility>
 #include <algorithm>
 
+#define MAX_POS 32
+
 float* load_float_array_from_file(const char* filename, size_t* size) {
     FILE* file = fopen(filename, "rb");
     if (file == NULL) {
@@ -84,7 +86,7 @@ int main(int argc, char** argv) {
     //while(1) { }
 
     printf("Building LUT..\n");
-    for (unsigned int pos = 0; pos < 32; pos++) {
+    for (unsigned int pos = 0; pos < MAX_POS; pos++) {
         printf("pos: %d\n", pos);
 
         for (unsigned int emb = 0; emb < 50257; emb++) {

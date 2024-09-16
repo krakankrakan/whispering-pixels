@@ -168,7 +168,7 @@ for t in corr_tupes:
     if np.all(reconstructed_image[y:y+window_sz_y, x:x+window_sz_x] == 0):
         reconstructed_image[y:y+window_sz_y, x:x+window_sz_x] = fragments[t[1]]
         seen_fragments_ctr += 1
-    
+
     # REMOVEME
     # For better reconsturction, we copy the last line of the fragment to the lower 8x4 pixels
     # in order to get "complete" fragments

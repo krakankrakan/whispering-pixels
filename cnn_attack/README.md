@@ -5,10 +5,11 @@ The test CNN contains 4 layers:
 3) Pooling
 4) Fully connected
 
-It is trained to detect the numbers from the MNIST dataset.
-
 If an attacker can leak some outputs of the first layer, this can give hints onto the inputs
 of the CNN.
+
+## Running the Attack
+To execute the attack, simply execute the `NeuralNetLeakVictim` app, which processes the CNN data. For the attacker, execute the `AttackerApp`. In case the attacker app sees leakage, it automatically exits and writes the data to `/data/data/com.example.testapp/cache/leaked_out.bin`. Be aware that the attack sometimes misclassifies noise as image data (although with a low probability). On our experiment device (Galaxy A52s, Adreno 618), we saw the leakage often being remapped to offsets of `0xc00` (e.g. `0x1c00`, `0x2c00`, ...) in our leaked data.
 
 ## Leak Attacker
 The attacker continuously reads stale GPU register contents and returns those to the host.
@@ -17,7 +18,7 @@ Finding the target CNN data can be difficult, due to the amount of data leaked. 
 successful identification down to the following criteria by experimentation:
  - there is a block of zeros leading before the leaked data
  - the leaked data is 0x400 bytes in size
- - convolutional layer output data is between 0.0f and 2.0f
+ - convolutional layer output data is between -2.0f and 2.0f
 
 Unfortunately, we cannot leak the whole output. However, since a CNN applies multiple filter
 kernels to its input (8 in our example), the data is easier to leak.

@@ -1,3 +1,5 @@
+#define _GNU_SOURCE  
+
 // GLES
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -14,7 +16,7 @@
 #include <sys/mman.h>
 #include <string.h>
 
-#define NUM_GROUPS      64
+#define NUM_GROUPS      32
 #define LOCAL_SIZE      256      // Also change in compute2.glsl
 
 #define CHECK() \
@@ -404,7 +406,7 @@ void computeShader()
                 seen_magic = 1;
             }
         }
-        
+
         unsigned int zero_chunk_ctr = 0;
 
         for (uint32_t* p = pOut0_; p < pOut0_ + arraySize; p+=32) {
@@ -435,17 +437,6 @@ void computeShader()
 }
 
 int main() {
-    SDL_Surface * texture = IMG_Load("../test.png");
-    if( texture == NULL )
-    {
-        printf( "Unable to load image %s! SDL_image Error: %s\n", "test.png", IMG_GetError() );
-    }
-    pixels = (uint8_t*)texture->pixels;
-    pixels_w = texture->w;
-    pixels_h = texture->h;
-
-    printf("BytesPerPixel: %d\n", texture->format->BytesPerPixel);
-
     EGLDisplay dpy = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (dpy == EGL_NO_DISPLAY) {
         printf("eglGetDisplay returned EGL_NO_DISPLAY.\n");

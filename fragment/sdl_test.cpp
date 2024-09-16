@@ -259,7 +259,7 @@ int main(int argc, char * args[]) {
 	GLuint program = createProgram(vertexShaderCode, fragmentShaderCode);
 	glUseProgram(program);
 
-	SDL_Surface * texture = IMG_Load("parrot32.jpg");
+	SDL_Surface * texture = IMG_Load("parrot32.png");
     if( texture == NULL )
     {
         printf( "Unable to load image %s! SDL_image Error: %s\n", "font.jpg", IMG_GetError() );
@@ -267,12 +267,12 @@ int main(int argc, char * args[]) {
 	GLuint textureID = createGLTextureFromSurface(texture);
 	SDL_FreeSurface(texture);
 
-	
+
 	int printed = 0;
     while(1) {
 		drawGLTexture(textureID, 0, 0, 32, 32);	
 		if (printed == 0) {
-			patch();
+			//patch();
 			printed = 1;
 		}
 		SDL_GL_SwapWindow(window);
